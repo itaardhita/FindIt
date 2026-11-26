@@ -21,19 +21,23 @@ export default function ProfilePage() {
   })
   useEffect(() => { loadMine() }, [uid])
 useEffect(() => {
+  if (!uid || saved.size === 0) {
+    setSv([])
+    return
+  }
+
   supabase
-    .from('bookmarks')
-    .select('*, posts(*, profiles!posts_user_id_fkey(name, avatar_url))')
+    .from('posts')
+    .select('*, profiles!posts_user_id_fkey(name, avatar_url)')
+    .in('id', Array.from(saved))
     .order('created_at', { ascending: false })
     .then(({ data, error }) => {
       if (error) {
-        console.error('Error bookmarks:', error)
+        console.error('Error saved posts:', error)
+        return
       }
-      setSv(
-        ((data ?? []) as unknown as { posts: Post }[])
-          .map(r => r.posts)
-          .filter(Boolean)
-      )
+
+      setSv((data as Post[]) ?? [])
     })
 }, [saved, uid])
   useEffect(() => { supabase.from('blocks').select('blocked_id, blocked:profiles!blocks_blocked_id_fkey(name, avatar_url)').then(({ data }) => setBl((data ?? []) as never)) }, [blocked.size])
