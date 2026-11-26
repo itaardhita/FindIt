@@ -21,7 +21,9 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
     <FindItLogo size={26} />
   </span>
   <div>
-    <p className="text-xl font-extrabold leading-tight">FindIt</p>
+<p className="w-fit rounded-md bg-white px-2 text-xl font-extrabold leading-tight">
+  <span className="text-[#252529]">Find</span><span className="text-[#89143B]">It</span>
+</p>
     <p className="text-sm text-ink/60">Tel-U Lost & Found</p>
   </div>
   <button className="ml-auto lg:hidden" aria-label="Tutup menu" onClick={onClose}>
