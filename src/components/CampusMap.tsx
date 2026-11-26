@@ -12,7 +12,9 @@ export default function CampusMap({ floor: f0 = 1, onFloor, highlight, onPick, h
   const drag = useRef<{ x: number; y: number; moved: boolean } | null>(null)
   const vb = FLOORS[floor].vb.split(' ').map(Number)
   const rooms = ROOMS.filter(r => r.floor === floor)
-  const hl = highlight ? getRoom(floor, highlight) : undefined
+const hl = highlight && floor === f0
+  ? getRoom(floor, highlight)
+  : undefined
   const zoom = (d: number) => setT(s => ({ ...s, k: Math.min(4, Math.max(1, s.k * d)) }))
   const changeFloor = (n: number) => { setFl(n); onFloor?.(n); setT({ x: 0, y: 0, k: 1 }) }
 
@@ -43,12 +45,14 @@ export default function CampusMap({ floor: f0 = 1, onFloor, highlight, onPick, h
         onPointerUp={() => setTimeout(() => (drag.current = null), 0)}>
         <g transform={`translate(${vb[0] + vb[2] / 2} ${vb[1] + vb[3] / 2}) scale(${t.k}) translate(${-(vb[0] + vb[2] / 2) + t.x / t.k} ${-(vb[1] + vb[3] / 2) + t.y / t.k})`}>
           {rooms.map(r => {
-            const on = highlight === r.id, cx = r.x + r.w / 2, cy = r.y + r.h / 2
+          const on = floor === f0 && highlight === r.id
+          const cx = r.x + r.w / 2
+          const cy = r.y + r.h / 2
             return (
               <g key={r.id} className={onPick && !r.stairs ? 'cursor-pointer' : ''}
                 onPointerEnter={() => setHover(r.name)} onPointerLeave={() => setHover(null)}
                 onClick={() => { if (!drag.current?.moved && onPick && !r.stairs) onPick(floor, r.id) }}>
-                <rect x={r.x} y={r.y} width={r.w} height={r.h} fill={r.c} opacity={highlight && !on ? 0.45 : 1} stroke="#1A1D2E" strokeWidth={on ? 4 : 1.5} />
+                <rect x={r.x} y={r.y} width={r.w} height={r.h} fill={r.c} opacity={hl && !on ? 0.45 : 1} stroke="#1A1D2E" strokeWidth={on ? 4 : 1.5} />
                 {pins?.[`${floor}:${r.id}`] ? <g><circle cx={r.x + r.w - 6} cy={r.y + 6} r="10" fill="#C8102E" stroke="white" strokeWidth="2" /><text x={r.x + r.w - 6} y={r.y + 10.5} textAnchor="middle" fontSize="11" fontWeight="800" fill="white">{pins[`${floor}:${r.id}`]}</text></g> : null}
                 {r.stairs
                   ? <text x={cx} y={cy + 4} textAnchor="middle" fontSize="11" fontWeight="700" fill="white">Tangga</text>
