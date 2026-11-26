@@ -9,7 +9,7 @@ import FindItLogo from './FindItLogo'
 const ago = (s: string) => { const m = Math.round((Date.now() - new Date(s).getTime()) / 60000); return m < 1 ? 'baru saja' : m < 60 ? `${m} mnt lalu` : m < 1440 ? `${Math.round(m / 60)} jam lalu` : `${Math.round(m / 1440)} hari lalu` }
 
 export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { me, notifs } = useApp(); const [menu, setMenu] = useState(false)
+const { me, notifs, dark } = useApp(); const [menu, setMenu] = useState(false)
   const unreadMsg = new Set(notifs.filter(n => !n.read && n.type === 'message').map(n => n.link)).size
   const items = [{ to: '/', label: 'Home', Icon: Home }, { to: '/explore', label: 'Explore', Icon: Compass }, { to: '/messages', label: 'Messages', Icon: MessageCircle, badge: unreadMsg }, { to: '/map', label: 'Campus Map', Icon: MapPin }, { to: '/history', label: 'History', Icon: Archive }, { to: '/profile', label: 'My Profile', Icon: User }]
   return (
@@ -21,8 +21,8 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
     <FindItLogo size={26} />
   </span>
   <div>
-<p className="w-fit rounded-md bg-white px-2 text-xl font-extrabold leading-tight">
-  <span className="text-[#252529]">Find</span><span className="text-[#89143B]">It</span>
+<p className={`w-fit rounded-md px-2 text-xl font-extrabold leading-tight ${dark ? 'bg-transparent text-white' : 'bg-white text-[#252529]'}`}>
+  Find<span className={dark ? 'text-red-400' : 'text-[#89143B]'}>It</span>
 </p>
     <p className="text-sm text-ink/60">Tel-U Lost & Found</p>
   </div>
