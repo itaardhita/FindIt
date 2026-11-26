@@ -4,6 +4,7 @@ import { Archive, Bell, CheckCircle2, Compass, Home, LogOut, Menu, MessageCircle
 import { supabase } from '../lib/supabase'
 import { useApp } from '../lib/ctx'
 import { Avatar } from './ui'
+import FindItLogo from './FindItLogo'
 
 const ago = (s: string) => { const m = Math.round((Date.now() - new Date(s).getTime()) / 60000); return m < 1 ? 'baru saja' : m < 60 ? `${m} mnt lalu` : m < 1440 ? `${Math.round(m / 60)} jam lalu` : `${Math.round(m / 1440)} hari lalu` }
 
@@ -15,11 +16,18 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
     <>
       {open && <div className="fixed inset-0 z-30 bg-black/40 lg:hidden" onClick={onClose} />}
       <aside className={`fixed inset-y-0 left-0 z-40 flex w-72 flex-col border-r border-ink/10 bg-surface p-4 transition-transform lg:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="flex items-center gap-3 px-2 py-3">
-          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-tel-soft text-tel"><PackageSearch size={26} /></span>
-          <div><p className="text-xl font-extrabold leading-tight">FindIt</p><p className="text-sm text-ink/60">Tel-U Lost & Found</p></div>
-          <button className="ml-auto lg:hidden" aria-label="Tutup menu" onClick={onClose}><X /></button>
-        </div>
+<div className="flex items-center gap-3 px-2 py-3">
+  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-tel-soft text-tel">
+    <FindItLogo size={26} />
+  </span>
+  <div>
+    <p className="text-xl font-extrabold leading-tight">FindIt</p>
+    <p className="text-sm text-ink/60">Tel-U Lost & Found</p>
+  </div>
+  <button className="ml-auto lg:hidden" aria-label="Tutup menu" onClick={onClose}>
+    <X />
+  </button>
+</div>
         <p className="mb-2 mt-8 px-3 text-xs font-bold tracking-wider text-ink/40">MENU</p>
         <nav className="space-y-1">
           {items.map(({ to, label, Icon, badge }) => (
