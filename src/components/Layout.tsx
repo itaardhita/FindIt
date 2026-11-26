@@ -22,7 +22,7 @@ const { me, notifs, dark } = useApp(); const [menu, setMenu] = useState(false)
   </span>
   <div>
 <p className={`w-fit rounded-md px-2 text-xl font-extrabold leading-tight ${dark ? 'bg-transparent text-white' : 'bg-white text-[#252529]'}`}>
-  Find<span className={dark ? 'text-red-400' : 'text-[#89143B]'}>It</span>
+Find<span className={dark ? 'text-tel' : 'text-[#89143B]'}>It</span>
 </p>
     <p className="text-sm text-ink/60">Tel-U Lost & Found</p>
   </div>
