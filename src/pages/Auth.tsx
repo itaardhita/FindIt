@@ -19,9 +19,9 @@ export default function Auth() {
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="hidden flex-col justify-between bg-tel p-12 text-white lg:flex">
         <span className="flex items-center gap-3 text-2xl font-extrabold">
-          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/15">
-            <FindItLogo />
-          </span>
+<span className="grid h-12 w-12 place-items-center rounded-2xl bg-white text-[#89143B]">
+  <FindItLogo />
+</span>
           <span className="inline-block rounded-md bg-white px-2">
             <span className="text-[#252529]">Find</span><span className="text-[#89143B]">It</span>
           </span>
