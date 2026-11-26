@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react'
-import { PackageSearch } from 'lucide-react'
+import FindItLogo from '../components/FindItLogo'
 import { supabase } from '../lib/supabase'
 
 export default function Auth() {
@@ -18,7 +18,12 @@ export default function Auth() {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="hidden flex-col justify-between bg-tel p-12 text-white lg:flex">
-        <span className="flex items-center gap-3 text-2xl font-extrabold"><span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/15"><PackageSearch /></span>FindIt</span>
+<span className="flex items-center gap-3 text-2xl font-extrabold">
+  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/15">
+    <FindItLogo />
+  </span>
+  FindIt
+</span>
         <div><h1 className="text-5xl font-extrabold leading-tight">Temukan kembali<br />yang hilang.</h1><p className="mt-4 max-w-sm text-white/80">Lost & found untuk civitas Telkom University Jakarta. Barang yang ditemukan teman kampus, mungkin sedang kamu cari.</p></div>
         <p className="text-sm text-white/60">Made for students, by students.</p>
       </div>
