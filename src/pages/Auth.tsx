@@ -21,8 +21,9 @@ export default function Auth() {
 <span className="flex items-center gap-3 text-2xl font-extrabold">
   <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/15">
     <FindItLogo />
+  <span className="inline-block rounded-md bg-white px-2">
+    <span className="text-[#252529]">Find</span><span className="text-[#89143B]">It</span>
   </span>
-  FindIt
 </span>
         <div><h1 className="text-5xl font-extrabold leading-tight">Temukan kembali<br />yang hilang.</h1><p className="mt-4 max-w-sm text-white/80">Lost & found untuk civitas Telkom University Jakarta. Barang yang ditemukan teman kampus, mungkin sedang kamu cari.</p></div>
         <p className="text-sm text-white/60">Made for students, by students.</p>
