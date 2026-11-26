@@ -12,7 +12,20 @@ export default function PostDetail() {
   const { uid, saved, toggleSave, blocked, toggleBlock } = useApp()
   const { id } = useParams(); const nav = useNavigate()
   const [p, setP] = useState<Post | null>(null); const [map, setMap] = useState(false); const [busy, setBusy] = useState(false); const [err, setErr] = useState(''); const [img, setImg] = useState(0); const [report, setReport] = useState(false)
-  useEffect(() => { supabase.from('posts').select('*, profiles(name, avatar_url)').eq('id', id).single().then(({ data }) => setP(data as Post)) }, [id])
+useEffect(() => {
+  supabase
+    .from('posts')
+    .select('*, profiles!posts_user_id_fkey(name, avatar_url)')
+    .eq('id', id)
+    .single()
+    .then(({ data, error }) => {
+      if (error) {
+        console.error('Error mengambil detail postingan:', error)
+        return
+      }
+      setP(data as Post)
+    })
+}, [id])
   if (!p) return <Skeleton className="h-96" />
   const mine = p.user_id === uid, open = p.status === 'belum_diambil', on = saved.has(p.id), isBlocked = blocked.has(p.user_id)
   async function claim() {
