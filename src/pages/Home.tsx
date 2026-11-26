@@ -27,10 +27,9 @@ export default function Home() {
           <span className="grid h-44 w-44 place-items-center rounded-full bg-tel/10 text-tel">
             <FindItLogo size={84} />
           </span>
-          <span className="absolute -bottom-2 -left-6 -rotate-6 whitespace-nowrap rounded-xl bg-surface px-4 py-2 text-sm font-bold shadow-lg">
-            Find what matters<br />
-            Lost something? FindIt here!
-          </span>
+<span className="absolute -bottom-2 -left-6 -rotate-6 whitespace-nowrap rounded-xl bg-surface px-4 py-2 text-sm font-bold shadow-lg">
+  Lost something? FindIt here!
+</span>
         </div>
       </section>
 
