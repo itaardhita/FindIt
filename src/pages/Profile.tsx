@@ -10,9 +10,32 @@ export default function ProfilePage() {
   const { uid, me, reloadMe, saved, blocked, toggleBlock } = useApp()
   const [tab, setTab] = useState<'mine' | 'saved' | 'blocked'>('mine'); const [mine, setMine] = useState<Post[] | null>(null); const [sv, setSv] = useState<Post[] | null>(null); const [bl, setBl] = useState<{ blocked_id: string; blocked: { name: string; avatar_url: string | null } }[]>([])
   const [edit, setEdit] = useState(false); const [name, setName] = useState(''); const [file, setFile] = useState<File | null>(null); const [busy, setBusy] = useState(false)
-  const loadMine = () => supabase.from('posts').select('*, profiles(name, avatar_url)').eq('user_id', uid).order('created_at', { ascending: false }).then(({ data }) => setMine((data as Post[]) ?? []))
+  const loadMine = () => supabase
+  .from('posts')
+  .select('*, profiles!posts_user_id_fkey(name, avatar_url)')
+  .eq('user_id', uid)
+  .order('created_at', { ascending: false })
+  .then(({ data, error }) => {
+    if (error) console.error('Error loadMine:', error)
+    setMine((data as Post[]) ?? [])
+  })
   useEffect(() => { loadMine() }, [uid])
-  useEffect(() => { supabase.from('bookmarks').select('*, profiles!posts_user_id_fkey(name, avatar_url)').order('created_at', { ascending: false }).then(({ data }) => setSv(((data ?? []) as unknown as { posts: Post }[]).map(r => r.posts).filter(Boolean))) }, [saved.size])
+useEffect(() => {
+  supabase
+    .from('bookmarks')
+    .select('*, posts(*, profiles!posts_user_id_fkey(name, avatar_url))')
+    .order('created_at', { ascending: false })
+    .then(({ data, error }) => {
+      if (error) {
+        console.error('Error bookmarks:', error)
+      }
+      setSv(
+        ((data ?? []) as unknown as { posts: Post }[])
+          .map(r => r.posts)
+          .filter(Boolean)
+      )
+    })
+}, [saved, uid])
   useEffect(() => { supabase.from('blocks').select('blocked_id, blocked:profiles!blocks_blocked_id_fkey(name, avatar_url)').then(({ data }) => setBl((data ?? []) as never)) }, [blocked.size])
   async function save() {
     setBusy(true); const patch: { name: string; avatar_url?: string } = { name: name.trim() || me!.name }
