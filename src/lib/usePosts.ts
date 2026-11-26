@@ -15,7 +15,7 @@ export function usePosts(o: Filters) {
   const key = JSON.stringify(o)
   useEffect(() => {
     const t = setTimeout(async () => {
-      let query = supabase.from('posts').select('*, profiles(name, avatar_url)').eq('status', 'belum_diambil').order('found_at', { ascending: o.sort === 'asc' })
+      let query = supabase.from('posts').select('*, profiles!posts_user_id_fkey(name, avatar_url)').eq('status', 'belum_diambil').order('found_at', { ascending: o.sort === 'asc' })
       const q = o.q?.replace(/[,()%]/g, ' ').trim()
       if (q) query = query.or(`title.ilike.%${q}%,description.ilike.%${q}%,category.ilike.%${q}%,location_note.ilike.%${q}%`)
       if (o.cat) query = query.eq('category', o.cat)
