@@ -17,7 +17,7 @@ export default function History() {
       <PageTitle title="History" sub="Barang yang sudah berhasil dikembalikan ke pemiliknya." />
       {list === null ? <Skeleton className="h-40" /> : list.length === 0 ? <p className="card p-10 text-center text-ink/60">Belum ada serah terima yang selesai. Riwayat muncul di sini setelah QR dipindai.</p> : (
         <div className="grid gap-4 md:grid-cols-2">{list.map(h => { const fin = h.finder_id === uid, o = fin ? h.claimer : h.finder; return (
-          <Link key={h.id} to={`/post/${h.posts.id}`} className="card flex items-center gap-4 p-4 hover:border-tel/40">
+          <Link key={h.id} to={`/post/${h.posts.id}`} state={{ sidebarFrom: '/history' }} className="card flex items-center gap-4 p-4 hover:border-tel/40">
             <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-ink/5">{h.posts.photos[0] && <img src={h.posts.photos[0]} alt="" className="h-full w-full object-cover" />}</div>
             <div className="min-w-0 grow"><b className="block truncate text-lg">{h.posts.title}</b>
               <p className="flex items-center gap-1.5 text-sm font-semibold text-green-600"><CheckCircle2 size={15} />{fin ? 'Kamu menyerahkan' : 'Kamu menerima'}</p>
