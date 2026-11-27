@@ -31,7 +31,7 @@ export default function MapPage() {
       </div>
       {room && <section className="mt-6"><h2 className="mb-3 text-lg font-extrabold">Barang di area ini</h2>
         {inRoom.length === 0 ? <p className="card p-6 text-sm text-ink/60">Belum ada barang yang dilaporkan di sini.</p> : <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{inRoom.map(p => (
-          <Link key={p.id} to={`/post/${p.id}`} className="card flex gap-3 p-3 hover:border-tel/40"><div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-ink/5">{p.photos[0] && <img src={p.photos[0]} alt="" className="h-full w-full object-cover" />}</div><div className="min-w-0"><b className="block truncate">{p.title}</b><span className="text-xs text-ink/60">{shortDate(p.found_at)}</span></div></Link>))}</div>}</section>}
+          <Link key={p.id} to={`/post/${p.id}`} state={{ sidebarFrom: '/map' }} className="card flex gap-3 p-3 hover:border-tel/40"><div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-ink/5">{p.photos[0] && <img src={p.photos[0]} alt="" className="h-full w-full object-cover" />}</div><div className="min-w-0"><b className="block truncate">{p.title}</b><span className="text-xs text-ink/60">{shortDate(p.found_at)}</span></div></Link>))}</div>}</section>}
     </div>
   )
 }
