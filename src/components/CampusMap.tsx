@@ -15,6 +15,9 @@ export default function CampusMap({ floor: f0 = 1, onFloor, highlight, onPick, h
 const hl = highlight && floor === f0
   ? getRoom(floor, highlight)
   : undefined
+  const showItemLocation = hl && (
+  pins === undefined || (pins[`${floor}:${hl.id}`] ?? 0) > 0
+)
   const zoom = (d: number) => setT(s => ({ ...s, k: Math.min(4, Math.max(1, s.k * d)) }))
   const changeFloor = (n: number) => { setFl(n); onFloor?.(n); setT({ x: 0, y: 0, k: 1 }) }
 
@@ -33,7 +36,12 @@ const hl = highlight && floor === f0
       </div>
       <svg ref={svg} viewBox={FLOORS[floor].vb} className={`w-full ${height} cursor-grab touch-none rounded-xl bg-paper active:cursor-grabbing`}
         onWheel={e => zoom(e.deltaY < 0 ? 1.15 : 1 / 1.15)}
-        onPointerDown={e => { drag.current = { x: e.clientX, y: e.clientY, moved: false }; svg.current?.setPointerCapture(e.pointerId) }}
+onPointerDown={e => {
+  drag.current = { x: e.clientX, y: e.clientY, moved: false }
+  if (e.target instanceof Element) {
+    e.target.setPointerCapture(e.pointerId)
+  }
+}}
         onPointerMove={e => {
           const d = drag.current; if (!d || !svg.current) return
           const s = vb[2] / svg.current.getBoundingClientRect().width
@@ -60,16 +68,22 @@ const hl = highlight && floor === f0
               </g>
             )
           })}
-          {hl && (
+{hl && showItemLocation && (
             <g pointerEvents="none">
               <circle cx={hl.x + hl.w / 2} cy={hl.y - 8} r="9" fill="#C8102E" stroke="white" strokeWidth="2.5"><animate attributeName="r" values="8;12;8" dur="1.4s" repeatCount="indefinite" /></circle>
             </g>
           )}
         </g>
       </svg>
-      <p className="mt-2 min-h-5 text-sm text-ink/70" aria-live="polite">
-        {hover ?? (hl ? `Barang ada di: ${hl.name}` : onPick ? 'Klik ruangan untuk memilih lokasi. Geser untuk menggeser denah.' : 'Geser dan zoom untuk melihat denah.')}
-      </p>
+<p className="mt-2 min-h-5 text-sm text-ink/70" aria-live="polite">
+  {hl && (!hover || hover === hl.name)
+    ? (showItemLocation ? `Barang ada di: ${hl.name}` : hl.name)
+    : hover ?? (
+        onPick
+          ? 'Klik ruangan untuk memilih lokasi. Geser untuk menggeser denah.'
+          : 'Geser dan zoom untuk melihat denah.'
+      )}
+</p>
     </div>
   )
 }
