@@ -87,7 +87,7 @@ async function handleClear() {
 }, [])
   const Ico = (t: string) => t === 'message' ? MessageCircle : t === 'handover' ? CheckCircle2 : PackageSearch
   return (
-    <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-ink/10 bg-surface/90 px-4 py-3 backdrop-blur lg:px-8">
+<header className="sticky top-0 z-20 flex items-center gap-3 border-b border-ink/10 bg-surface/90 px-4 py-2 backdrop-blur lg:px-8">
       <button className="icon-btn lg:hidden" aria-label="Buka menu" onClick={onMenu}><Menu size={20} /></button>
       <div className="ml-auto flex items-center gap-2">
         <button className="icon-btn" aria-label={dark ? 'Mode terang' : 'Mode gelap'} onClick={toggleDark}>{dark ? <Sun size={20} /> : <Moon size={20} />}</button>
