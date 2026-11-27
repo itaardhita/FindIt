@@ -30,19 +30,66 @@ function Inbox({ active, className }: { active?: string; className: string }) {
       setList(cs.sort((a, b) => (b.at ?? '').localeCompare(a.at ?? '')))
     })()
   }, [tick])
-  const unread = new Set(notifs.filter(n => !n.read && n.type === 'message').map(n => n.link))
+  const unreadMessages = notifs.filter(
+    n => n.type === 'message' && !n.read && n.link
+  )
+  const unread = new Set(unreadMessages.map(n => n.link))
   return (
     <div className={`flex-col border-ink/10 lg:border-r ${className}`}>
-      <div className="flex items-center justify-between border-b border-ink/10 p-5"><b className="text-lg">Inbox</b><span className="rounded-full bg-tel-soft px-2.5 py-0.5 text-sm font-bold text-tel">{list?.length ?? 0}</span></div>
+      <div className="flex items-center justify-between border-b border-ink/10 p-5">
+        <b className="text-lg">Inbox</b>
+        {unreadMessages.length > 0 && (
+          <span className="rounded-full bg-tel-soft px-2.5 py-0.5 text-sm font-bold text-tel">
+            {unreadMessages.length}
+          </span>
+        )}
+      </div>
       <div className="grow overflow-y-auto">
         {list === null && <div className="space-y-2 p-3">{[0, 1, 2].map(i => <Skeleton key={i} className="h-20" />)}</div>}
         {list?.length === 0 && <p className="p-6 text-sm text-ink/60">Belum ada percakapan. Buka postingan lalu tekan “Ini barang saya”.</p>}
-        {list?.map(c => { const o = c.finder_id === uid ? c.claimer : c.finder; return (
-          <Link key={c.id} to={`/messages/${c.id}`} className={`flex gap-3 border-b border-ink/5 p-4 hover:bg-ink/5 ${active === c.id ? 'bg-tel-soft' : ''}`}>
-            <Avatar name={o.name} url={o.avatar_url} size={48} />
-            <div className="min-w-0 grow"><div className="flex items-center justify-between gap-2"><b className="truncate">{o.name}</b>{unread.has(`/messages/${c.id}`) && <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-tel" />}{c.status === 'closed' && <span className="text-[11px] font-bold text-green-600">Selesai</span>}</div>
-              <p className="truncate text-sm text-ink/70">{c.posts.title}</p><p className="truncate text-sm text-ink/50">{c.last ?? 'Mulai percakapan…'}</p></div>
-          </Link>) })}
+        {list?.map(c => {
+          const other = c.finder_id === uid ? c.claimer : c.finder
+          const link = `/messages/${c.id}`
+          const isUnread = unread.has(link)
+
+          return (
+            <Link
+              key={c.id}
+              to={link}
+              className={`relative flex gap-3 border-b border-ink/5 p-4 hover:bg-ink/5 ${
+                active === c.id ? 'bg-tel-soft' : ''
+              }`}
+            >
+              <Avatar name={other.name} url={other.avatar_url} size={48} />
+
+              <div className="min-w-0 grow">
+                <div className="flex items-center justify-between gap-2">
+                  <b className="truncate">{other.name}</b>
+                  {c.status === 'closed' && (
+                    <span className="shrink-0 text-[11px] font-bold text-green-600">
+                      Selesai
+                    </span>
+                  )}
+                </div>
+
+                <p className="truncate pr-5 text-sm text-ink/70">
+                  {c.posts.title}
+                </p>
+                <p className={`truncate text-sm ${
+                  isUnread ? 'font-bold text-ink' : 'text-ink/50'
+                }`}>
+                  {c.last ?? 'Mulai percakapan…'}
+                </p>
+              </div>
+
+              {isUnread && (
+                <span className="absolute right-4 top-1/2 h-2.5 w-2.5 -translate-y-1/2 rounded-full bg-red-500">
+                  <span className="sr-only">Pesan belum dibaca</span>
+                </span>
+              )}
+            </Link>
+          )
+        })}
       </div>
     </div>
   )
@@ -73,7 +120,13 @@ function ChatPanel({ id }: { id: string }) {
     return () => { supabase.removeChannel(ch) }
   }, [id])
   useEffect(() => { end.current?.scrollIntoView({ behavior: 'smooth' }) }, [msgs.length])
-  useEffect(() => { markRead(notifs.filter(n => !n.read && n.link === `/messages/${id}`).map(n => n.id)) }, [notifs.length, id])
+  useEffect(() => {
+    const ids = notifs
+      .filter(n => !n.read && n.link === `/messages/${id}`)
+      .map(n => n.id)
+
+    if (ids.length > 0) markRead(ids)
+  }, [id, notifs, markRead])
   if (c === undefined) return <Skeleton className="m-4 h-64 grow" />
   if (c === null) return <p className="m-auto text-ink/60">Percakapan tidak ditemukan.</p>
   const isFinder = c.finder_id === uid, closed = c.status === 'closed', other = isFinder ? c.claimer : c.finder, otherId = isFinder ? c.claimer_id : c.finder_id, isBlocked = blocked.has(otherId)
