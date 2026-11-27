@@ -1,13 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { ROOMS, getRoom } from '../data/campus'
 import { supabase } from '../lib/supabase'
 import photo from './findit-kunci.webp'
 import './AuthLanding.css'
-
-const rooms = ROOMS.filter(room => room.floor === 1)
-const example = getRoom(1, '9')
 
 function CampusScene({ animated }: { animated: boolean }) {
   const panel = useRef<HTMLElement>(null)
@@ -28,24 +24,18 @@ function CampusScene({ animated }: { animated: boolean }) {
   return <aside ref={panel} className="fi-scene">
     <div className="fi-brand"><svg width="25" height="29" viewBox="0 0 24 28" aria-hidden="true"><path d="M12 26S2 17 2 11a10 10 0 0 1 20 0c0 6-10 15-10 15Z" fill="none" stroke="currentColor" strokeWidth="2.4"/><circle cx="11" cy="10" r="4" fill="none" stroke="currentColor" strokeWidth="2"/><path d="m14 13 4 4" stroke="currentColor" strokeWidth="2"/></svg>Find<span>It</span></div>
     <h1>Temukan kembali<br />yang hilang.</h1>
-    {animated && example && <svg className="fi-plan" viewBox="195 72 610 286" aria-hidden="true">
-      {rooms.map(r => <g key={r.id}>
-        <rect x={r.x} y={r.y} width={r.w} height={r.h} fill="#e8d9ca" stroke="#ad8378" strokeWidth="2" />
-        <rect x={r.x+4} y={r.y+4} width={r.w-8} height={r.h-8} fill="none" stroke="#ccafa1" />
-      </g>)}
-      <g transform={`translate(${example.x + example.w / 2} ${example.y + example.h / 2})`}>
-        <path d="M0 0 Q-16 -16 -16 -26 A16 16 0 1 1 16 -26 Q16 -16 0 0" fill="#c8102e" stroke="white" strokeWidth="3"/>
-        <circle cy="-26" r="5" fill="white" />
-        <rect x="-57" y="4" width="114" height="19" rx="5" fill="#fffaf4" />
-        <text y="17" textAnchor="middle" fill="#582238" fontSize="10" fontWeight="700">Lt. 1 · {example.name}</text>
-        <g className="fi-photo">
-          <g transform="rotate(8)">
-            <rect x="-46" y="-104" width="92" height="92" rx="4" fill="#fffbf6"/>
-            <image href={photo} x="-41" y="-99" width="82" height="82" preserveAspectRatio="xMidYMid slice"/>
-          </g>
-        </g>
-      </g>
-    </svg>}
+    {animated && <p className="fi-intro">Lost &amp; found untuk civitas Telkom University Jakarta. Barang yang ditemukan teman kampus, mungkin sedang kamu cari.</p>}
+    {animated && <p className="fi-credit">Made for students, by students.</p>}
+    {animated && <div className="fi-art" aria-hidden="true">
+      <div className="fi-point">
+        <svg viewBox="0 0 48 58">
+          <path d="M24 55C20 48 3 32 3 23a21 21 0 1 1 42 0c0 9-17 25-21 32Z" fill="#d31336" stroke="#fff9f1" strokeWidth="3" />
+          <circle cx="24" cy="22" r="8" fill="#fff9f1" />
+        </svg>
+        <span>R. Kuliah 201</span>
+      </div>
+      <img className="fi-photo" src={photo} alt="" />
+    </div>}
   </aside>
 }
 
