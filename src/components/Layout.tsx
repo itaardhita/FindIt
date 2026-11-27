@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { Archive, Bell, CheckCircle2, Compass, Home, LogOut, Menu, MessageCircle, MapPin, MoreHorizontal, Moon, PackageSearch, Plus, Search, Sun, Trash2, User, X } from 'lucide-react'
+import { Archive, Bell, CheckCircle2, Compass, Home, LogOut, Menu, MessageCircle, MapPin, MoreHorizontal, Moon, PackageSearch, Plus, Sun, Trash2, User, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useApp } from '../lib/ctx'
 import { Avatar } from './ui'
@@ -55,8 +55,8 @@ Find<span className={dark ? 'text-tel' : 'text-[#89143B]'}>It</span>
 }
 
 export function Topbar({ onMenu }: { onMenu: () => void }) {
-const { me, dark, toggleDark, notifs, markRead, clearNotifications } = useApp(); const nav = useNavigate(); const [q, setQ] = useState(''); const [bell, setBell] = useState(false)
-  const input = useRef<HTMLInputElement>(null); const bellRef = useRef<HTMLDivElement>(null)
+const { me, dark, toggleDark, notifs, markRead, clearNotifications } = useApp(); const nav = useNavigate(); const [bell, setBell] = useState(false)
+const bellRef = useRef<HTMLDivElement>(null)
 const visibleNotifs = notifs.filter(n => !n.dismissed)
 const unread = visibleNotifs.filter(n => !n.read)
 const [clearing, setClearing] = useState(false)
@@ -76,20 +76,19 @@ async function handleClear() {
   }
 }
   useEffect(() => {
-    const k = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); input.current?.focus() } }
-    const c = (e: MouseEvent) => { if (bellRef.current && !bellRef.current.contains(e.target as Node)) setBell(false) }
-    window.addEventListener('keydown', k); document.addEventListener('mousedown', c)
-    return () => { window.removeEventListener('keydown', k); document.removeEventListener('mousedown', c) }
-  }, [])
+  const closeBell = (e: MouseEvent) => {
+    if (bellRef.current && !bellRef.current.contains(e.target as Node)) {
+      setBell(false)
+    }
+  }
+
+  document.addEventListener('mousedown', closeBell)
+  return () => document.removeEventListener('mousedown', closeBell)
+}, [])
   const Ico = (t: string) => t === 'message' ? MessageCircle : t === 'handover' ? CheckCircle2 : PackageSearch
   return (
     <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-ink/10 bg-surface/90 px-4 py-3 backdrop-blur lg:px-8">
       <button className="icon-btn lg:hidden" aria-label="Buka menu" onClick={onMenu}><Menu size={20} /></button>
-      <form className="relative max-w-xl grow" onSubmit={e => { e.preventDefault(); nav(`/explore?q=${encodeURIComponent(q)}`) }}>
-        <Search size={19} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/40" />
-        <input ref={input} className="inp !rounded-2xl !py-3 !pl-11 !pr-14" placeholder="Cari barang, lokasi, atau kategori…" value={q} onChange={e => setQ(e.target.value)} />
-        <kbd className="absolute right-3 top-1/2 hidden -translate-y-1/2 rounded-md border border-ink/15 px-1.5 py-0.5 text-xs text-ink/40 sm:block">⌘ K</kbd>
-      </form>
       <div className="ml-auto flex items-center gap-2">
         <button className="icon-btn" aria-label={dark ? 'Mode terang' : 'Mode gelap'} onClick={toggleDark}>{dark ? <Sun size={20} /> : <Moon size={20} />}</button>
         <div className="relative" ref={bellRef}>
