@@ -59,7 +59,11 @@ useEffect(() => {
         <button className="btn-ghost" onClick={() => { setName(me?.name ?? ''); setEdit(true) }}><Pencil size={16} />Edit profil</button>
       </section>
       <div role="tablist" className="flex gap-2">{tabs.map(t => <button key={t.k} role="tab" aria-selected={tab === t.k} onClick={() => setTab(t.k)} className={`rounded-full px-4 py-2 text-sm font-bold ${tab === t.k ? 'bg-tel text-white' : 'bg-ink/5 text-ink/70 hover:bg-ink/10'}`}>{t.l}</button>)}</div>
-      {tab === 'mine' && grid(mine, 'Kamu belum memposting barang. Tekan “Post barang” untuk mulai.', true)}
+{tab === 'mine' && grid(
+  mine?.filter(p => p.status === 'belum_diambil') ?? null,
+  'Belum ada barang yang menunggu diambil.',
+  true
+)}
       {tab === 'saved' && grid(sv, 'Belum ada postingan tersimpan. Tekan ikon bookmark pada kartu barang.')}
       {tab === 'blocked' && (bl.length === 0 ? <p className="card p-10 text-center text-ink/60">Tidak ada pengguna yang kamu blokir.</p> : <ul className="card divide-y divide-ink/10">{bl.map(b => <li key={b.blocked_id} className="flex items-center gap-3 p-4"><Avatar name={b.blocked.name} url={b.blocked.avatar_url} size={40} /><b className="grow">{b.blocked.name}</b><button className="btn-ghost !py-2" onClick={() => toggleBlock(b.blocked_id)}>Buka blokir</button></li>)}</ul>)}
       {edit && <Modal title="Edit profil" onClose={() => setEdit(false)}><div className="space-y-4"><div className="flex items-center gap-4"><Avatar name={name} url={file ? URL.createObjectURL(file) : me?.avatar_url} size={64} /><input type="file" accept="image/*" onChange={e => setFile(e.target.files?.[0] ?? null)} className="text-sm" /></div><input className="inp" value={name} onChange={e => setName(e.target.value)} placeholder="Nama tampilan" /><button className="btn w-full" disabled={busy} onClick={save}>{busy ? 'Menyimpan…' : 'Simpan'}</button></div></Modal>}
