@@ -18,7 +18,7 @@ export default function MapPage() {
     <div>
       <PageTitle title="Campus Map" sub="Temukan lokasi barang di area Tel-U Jakarta Halimun." />
       <div className="grid gap-5 lg:grid-cols-[1fr_20rem]">
-        <CampusMap floor={floor} onFloor={n => { setFloor(n); setRoom(undefined) }} highlight={room} pins={pins} height="h-[30rem]" onPick={(_f, r) => setRoom(r)} />
+        <CampusMap floor={floor} onFloor={n => { setFloor(n); setRoom(undefined) }} highlight={room} pins={pins} selectedItemCount={inRoom.length} height="h-[30rem]" onPick={(_f, r) => setRoom(r)} />
         <aside className="card p-5">
           <h2 className="text-lg font-extrabold">Area kampus</h2><p className="mb-3 text-sm text-ink/60">Pilih area untuk melihat daftar barang.</p>
           <ul className="max-h-80 overflow-y-auto">
