@@ -9,7 +9,7 @@ import { Avatar, PageTitle, Skeleton } from '../components/ui'
 import ReportModal from '../components/ReportModal'
 
 type Who = { name: string; avatar_url: string | null }
-type Conv = { id: string; status: 'active' | 'closed'; finder_id: string; claimer_id: string; posts: { title: string; photos: string[] }; finder: Who; claimer: Who; last?: string; at?: string }
+type Conv = { id: string; post_id: string; status: 'active' | 'closed'; finder_id: string; claimer_id: string; posts: { title: string; photos: string[] }; finder: Who; claimer: Who; last?: string; at?: string }
 const SEL = '*, posts(title, photos), finder:profiles!conversations_finder_id_fkey(name, avatar_url), claimer:profiles!conversations_claimer_id_fkey(name, avatar_url)'
 
 function Inbox({ active, className }: { active?: string; className: string }) {
@@ -142,6 +142,33 @@ function ChatPanel({ id }: { id: string }) {
         <button className="icon-btn !h-10 !w-10" aria-label="Laporkan pengguna" onClick={() => setReport(true)}><Flag size={17} /></button>
         <button className="icon-btn !h-10 !w-10" aria-label={isBlocked ? 'Buka blokir' : 'Blokir pengguna'} onClick={() => confirm(isBlocked ? 'Buka blokir?' : 'Blokir pengguna ini?') && toggleBlock(otherId)}><Ban size={17} className={isBlocked ? 'text-tel' : ''} /></button>
       </div>
+            <Link
+        to={`/post/${c.post_id}`}
+        state={{ sidebarFrom: '/messages' }}
+        aria-label={`Lihat postingan ${c.posts.title}`}
+        className="mx-4 mt-3 flex shrink-0 items-center gap-3 rounded-xl border border-ink/10 bg-surface p-2.5 hover:border-tel/40"
+      >
+        <div className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-lg bg-ink/5">
+          {c.posts.photos?.[0] ? (
+            <img
+              src={c.posts.photos[0]}
+              alt=""
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <span className="text-center text-xs text-ink/60">Tanpa foto</span>
+          )}
+        </div>
+
+        <div className="min-w-0 grow">
+          <p className="text-xs text-ink/60">Postingan dalam percakapan ini</p>
+          <p className="truncate font-bold">{c.posts.title}</p>
+        </div>
+
+        <span className="shrink-0 text-xs font-bold text-tel">
+          Lihat postingan
+        </span>
+      </Link>
       <div className="min-h-0 grow space-y-2 overflow-y-auto p-4">
         {msgs.map(m => <div key={m.id} className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm ${m.sender_id === uid ? 'ml-auto rounded-br-md bg-tel text-white' : 'rounded-bl-md bg-ink/5'}`}>{m.body}<span className={`mt-0.5 block text-[10px] ${m.sender_id === uid ? 'text-white/70' : 'text-ink/40'}`}>{timeWib(m.created_at)}</span></div>)}
         <div ref={end} />
