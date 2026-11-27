@@ -13,6 +13,7 @@ import Messages from './pages/Messages'
 import MapPage from './pages/MapPage'
 import History from './pages/History'
 import ProfilePage from './pages/Profile'
+import ForgotPassword from './pages/ForgotPassword'
 
 function Shell({ uid }: { uid: string }) {
   const [me, setMe] = useState<Profile | null>(null)
@@ -47,9 +48,27 @@ function Shell({ uid }: { uid: string }) {
     if (on) await supabase.from('blocks').delete().eq('blocker_id', uid).eq('blocked_id', id); else await supabase.from('blocks').insert({ blocker_id: uid, blocked_id: id })
   }
   const markRead = (ids: string[]) => { if (!ids.length) return; setNotifs(n => n.map(x => ids.includes(x.id) ? { ...x, read: true } : x)); supabase.from('notifications').update({ read: true }).in('id', ids).then(() => {}) }
+async function clearNotifications() {
+  const ids = notifs.filter(n => !n.dismissed).map(n => n.id)
 
+  for (let start = 0; start < ids.length; start += 50) {
+    const batch = ids.slice(start, start + 50)
+    const { error } = await supabase
+      .from('notifications')
+      .update({ dismissed: true })
+      .eq('user_id', uid)
+      .in('id', batch)
+
+    if (error) throw error
+
+    const cleared = new Set(batch)
+    setNotifs(current =>
+      current.map(n => cleared.has(n.id) ? { ...n, dismissed: true } : n)
+    )
+  }
+}
   return (
-    <Ctx.Provider value={{ uid, me, reloadMe, blocked, toggleBlock, saved, toggleSave, notifs, markRead, dark, toggleDark: () => setDark(!dark) }}>
+    <Ctx.Provider value={{ uid, me, reloadMe, blocked, toggleBlock, saved, toggleSave, notifs, markRead, clearNotifications, dark, toggleDark: () => setDark(!dark) }}>
       <Sidebar open={drawer} onClose={() => setDrawer(false)} />
       <div className="min-h-screen lg:pl-72">
         <Topbar onMenu={() => setDrawer(true)} />
@@ -75,6 +94,7 @@ function Shell({ uid }: { uid: string }) {
 }
 
 export default function App() {
+  const { pathname } = useLocation()
   const [session, setSession] = useState<Session | null | undefined>(undefined)
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSession(data.session))
@@ -82,5 +102,6 @@ export default function App() {
     return () => sub.subscription.unsubscribe()
   }, [])
   if (session === undefined) return <div className="grid h-screen place-items-center text-ink/60">Memuat…</div>
+  if (pathname === '/lupa-password') return <ForgotPassword />
   return session ? <Shell uid={session.user.id} /> : <Auth />
 }
