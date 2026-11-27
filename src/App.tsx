@@ -28,7 +28,12 @@ function Shell({ uid }: { uid: string }) {
     reloadMe()
     supabase.from('blocks').select('blocked_id').then(({ data }) => setBlocked(new Set((data ?? []).map(r => r.blocked_id))))
     supabase.from('bookmarks').select('post_id').then(({ data }) => setSaved(new Set((data ?? []).map(r => r.post_id))))
-    supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(30).then(({ data }) => setNotifs((data as Notif[]) ?? []))
+    supabase.from('notifications')
+      .select('*')
+      .eq('user_id', uid)
+      .or(`read.eq.false,created_at.gte.${new Date(Date.now() - 30 * 86400000).toISOString()}`)
+      .order('created_at', { ascending: false })
+      .then(({ data }) => setNotifs((data as Notif[]) ?? []))
     const ch = supabase.channel('notif-' + uid).on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${uid}` }, p => setNotifs(n => [p.new as Notif, ...n])).subscribe()
     return () => { supabase.removeChannel(ch) }
   }, [uid, reloadMe])
