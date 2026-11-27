@@ -45,7 +45,20 @@ useEffect(() => {
   const row = (I: typeof Tag, k: string, v: string) => <div className="flex items-start gap-3"><I size={18} className="mt-0.5 shrink-0 text-tel" /><div><p className="text-xs text-ink/50">{k}</p><p className="font-semibold">{v}</p></div></div>
   return (
     <div>
-      <Link to="/explore" className="mb-4 inline-flex items-center gap-1 text-sm font-bold text-ink/60 hover:text-tel"><ChevronLeft size={16} />Kembali</Link>
+  <button
+  type="button"
+  onClick={() => {
+    if (window.history.state?.idx > 0) {
+      nav(-1)
+    } else {
+      nav('/explore', { replace: true })
+    }
+  }}
+  className="mb-4 inline-flex items-center gap-1 text-sm font-bold text-ink/60 hover:text-tel"
+>
+  <ChevronLeft size={16} />
+  Kembali
+</button>
       <div className="grid gap-8 md:grid-cols-2">
         <div>
           <div className="aspect-square overflow-hidden rounded-3xl bg-ink/5">{p.photos[img] ? <img src={p.photos[img]} alt={p.title} className="h-full w-full object-cover" /> : <div className="grid h-full place-items-center text-ink/40">Tanpa foto</div>}</div>
