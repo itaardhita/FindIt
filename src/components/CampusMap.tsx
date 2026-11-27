@@ -1,9 +1,9 @@
 import { useRef, useState } from 'react'
 import { FLOORS, ROOMS, getRoom } from '../data/campus'
 
-type Props = { floor?: number; onFloor?: (n: number) => void; highlight?: string; onPick?: (floor: number, room: string) => void; height?: string; pins?: Record<string, number> }
+type Props = { floor?: number; onFloor?: (n: number) => void; highlight?: string; onPick?: (floor: number, room: string) => void; height?: string; pins?: Record<string, number>; selectedItemCount?: number }
 
-export default function CampusMap({ floor: f0 = 1, onFloor, highlight, onPick, height = 'h-[22rem]', pins }: Props) {
+export default function CampusMap({ floor: f0 = 1, onFloor, highlight, onPick, height = 'h-[22rem]', pins, selectedItemCount }: Props) {
   const [fl, setFl] = useState(f0)
   const floor = onFloor ? f0 : fl
   const [t, setT] = useState({ x: 0, y: 0, k: 1 })
@@ -15,9 +15,20 @@ export default function CampusMap({ floor: f0 = 1, onFloor, highlight, onPick, h
 const hl = highlight && floor === f0
   ? getRoom(floor, highlight)
   : undefined
-  const showItemLocation = hl && (
-  pins === undefined || (pins[`${floor}:${hl.id}`] ?? 0) > 0
-)
+  const isCampusMap = selectedItemCount !== undefined
+  let caption = onPick
+    ? 'Klik ruangan untuk memilih lokasi. Geser untuk menggeser denah.'
+    : 'Geser dan zoom untuk melihat denah.'
+
+  if (selectedItemCount !== undefined) {
+    if (hl) {
+      caption = selectedItemCount > 0 ? `Barang ada di: ${hl.name}` : hl.name
+    }
+  } else if (hover && hover !== hl?.name) {
+    caption = hover
+  } else if (hl) {
+    caption = `Barang ada di: ${hl.name}`
+  }
   const zoom = (d: number) => setT(s => ({ ...s, k: Math.min(4, Math.max(1, s.k * d)) }))
   const changeFloor = (n: number) => { setFl(n); onFloor?.(n); setT({ x: 0, y: 0, k: 1 }) }
 
@@ -68,22 +79,16 @@ onPointerDown={e => {
               </g>
             )
           })}
-{hl && showItemLocation && (
+{hl && !isCampusMap && (
             <g pointerEvents="none">
               <circle cx={hl.x + hl.w / 2} cy={hl.y - 8} r="9" fill="#C8102E" stroke="white" strokeWidth="2.5"><animate attributeName="r" values="8;12;8" dur="1.4s" repeatCount="indefinite" /></circle>
             </g>
           )}
         </g>
       </svg>
-<p className="mt-2 min-h-5 text-sm text-ink/70" aria-live="polite">
-  {hl && (!hover || hover === hl.name)
-    ? (showItemLocation ? `Barang ada di: ${hl.name}` : hl.name)
-    : hover ?? (
-        onPick
-          ? 'Klik ruangan untuk memilih lokasi. Geser untuk menggeser denah.'
-          : 'Geser dan zoom untuk melihat denah.'
-      )}
-</p>
+      <p className="mt-2 min-h-5 text-sm text-ink/70" aria-live="polite">
+        {caption}
+      </p>
     </div>
   )
 }
