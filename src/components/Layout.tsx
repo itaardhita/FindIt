@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { Archive, Bell, CheckCircle2, Compass, Home, LogOut, Menu, MessageCircle, MapPin, MoreHorizontal, Moon, PackageSearch, Plus, Search, Sun, User, X } from 'lucide-react'
+import { Archive, Bell, CheckCircle2, Compass, Home, LogOut, Menu, MessageCircle, MapPin, MoreHorizontal, Moon, PackageSearch, Plus, Search, Sun, Trash2, User, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useApp } from '../lib/ctx'
 import { Avatar } from './ui'
@@ -52,9 +52,26 @@ Find<span className={dark ? 'text-tel' : 'text-[#89143B]'}>It</span>
 }
 
 export function Topbar({ onMenu }: { onMenu: () => void }) {
-  const { me, dark, toggleDark, notifs, markRead } = useApp(); const nav = useNavigate(); const [q, setQ] = useState(''); const [bell, setBell] = useState(false)
+const { me, dark, toggleDark, notifs, markRead, clearNotifications } = useApp(); const nav = useNavigate(); const [q, setQ] = useState(''); const [bell, setBell] = useState(false)
   const input = useRef<HTMLInputElement>(null); const bellRef = useRef<HTMLDivElement>(null)
-  const unread = notifs.filter(n => !n.read)
+const visibleNotifs = notifs.filter(n => !n.dismissed)
+const unread = visibleNotifs.filter(n => !n.read)
+const [clearing, setClearing] = useState(false)
+const [clearError, setClearError] = useState('')
+
+async function handleClear() {
+  if (clearing || visibleNotifs.length === 0) return
+
+  setClearing(true)
+  setClearError('')
+  try {
+    await clearNotifications()
+  } catch {
+    setClearError('Gagal membersihkan notifikasi. Coba lagi.')
+  } finally {
+    setClearing(false)
+  }
+}
   useEffect(() => {
     const k = (e: KeyboardEvent) => { if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); input.current?.focus() } }
     const c = (e: MouseEvent) => { if (bellRef.current && !bellRef.current.contains(e.target as Node)) setBell(false) }
@@ -76,10 +93,39 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
           <button className="icon-btn relative" aria-label="Notifikasi" onClick={() => setBell(!bell)}><Bell size={20} />{unread.length > 0 && <span className="absolute right-2.5 top-2.5 h-2.5 w-2.5 rounded-full bg-sun ring-2 ring-surface" />}</button>
           {bell && (
             <div className="pop card absolute right-0 top-14 w-80 max-w-[85vw] overflow-hidden shadow-2xl">
-              <div className="flex items-center justify-between border-b border-ink/10 p-3"><b>Notifikasi</b>{unread.length > 0 && <button className="text-xs font-bold text-tel" onClick={() => markRead(unread.map(n => n.id))}>Tandai semua dibaca</button>}</div>
+<div className="flex items-center gap-2 border-b border-ink/10 p-3">
+  <b>Notifikasi</b>
+
+  <div className="ml-auto flex items-center gap-2">
+    {unread.length > 0 && (
+      <button
+        type="button"
+        className="text-xs font-bold text-tel"
+        onClick={() => markRead(unread.map(n => n.id))}
+      >
+        Tandai semua dibaca
+      </button>
+    )}
+
+    <button
+      type="button"
+      title="Bersihkan semua notifikasi"
+      aria-label="Bersihkan semua notifikasi"
+      disabled={clearing || visibleNotifs.length === 0}
+      onClick={handleClear}
+      className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-ink/70 hover:bg-ink/5 hover:text-tel disabled:opacity-40"
+    >
+      <Trash2 size={18} aria-hidden="true" />
+    </button>
+  </div>
+</div>
+
+{clearError && (
+  <p role="alert" className="px-3 py-2 text-xs text-tel">{clearError}</p>
+)}
               <div className="max-h-96 overflow-y-auto">
-                {notifs.length === 0 && <p className="p-6 text-center text-sm text-ink/60">Belum ada notifikasi.</p>}
-                {notifs.map(n => { const I = Ico(n.type); return (
+                {visibleNotifs.length === 0 && <p className="p-6 text-center text-sm text-ink/60">Belum ada notifikasi.</p>}
+                {visibleNotifs.map(n => { const I = Ico(n.type); return (
                   <button key={n.id} onClick={() => { markRead([n.id]); setBell(false); if (n.link) nav(n.link) }} className={`flex w-full gap-3 border-b border-ink/5 p-3 text-left hover:bg-ink/5 ${n.read ? '' : 'bg-tel-soft/60'}`}>
                     <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-tel-soft text-tel"><I size={17} /></span>
                     <span className="min-w-0"><b className="block truncate text-sm">{n.title}</b><span className="block truncate text-xs text-ink/60">{n.body}</span><span className="text-[11px] text-ink/40">{ago(n.created_at)}</span></span>
