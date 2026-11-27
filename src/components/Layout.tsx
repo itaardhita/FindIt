@@ -9,6 +9,9 @@ import FindItLogo from './FindItLogo'
 const ago = (s: string) => { const m = Math.round((Date.now() - new Date(s).getTime()) / 60000); return m < 1 ? 'baru saja' : m < 60 ? `${m} mnt lalu` : m < 1440 ? `${Math.round(m / 60)} jam lalu` : `${Math.round(m / 1440)} hari lalu` }
 
 export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
+const location = useLocation()
+const isPostDetail = /^\/post\/[^/]+\/?$/.test(location.pathname)
+const sidebarFrom = isPostDetail ? location.state?.sidebarFrom : undefined
 const { me, notifs, dark } = useApp(); const [menu, setMenu] = useState(false)
   const unreadMsg = new Set(notifs.filter(n => !n.read && n.type === 'message').map(n => n.link)).size
   const items = [{ to: '/', label: 'Home', Icon: Home }, { to: '/explore', label: 'Explore', Icon: Compass }, { to: '/messages', label: 'Messages', Icon: MessageCircle, badge: unreadMsg }, { to: '/map', label: 'Campus Map', Icon: MapPin }, { to: '/history', label: 'History', Icon: Archive }, { to: '/profile', label: 'My Profile', Icon: User }]
@@ -33,7 +36,7 @@ Find<span className={dark ? 'text-tel' : 'text-[#89143B]'}>It</span>
         <p className="mb-2 mt-8 px-3 text-xs font-bold tracking-wider text-ink/40">MENU</p>
         <nav className="space-y-1">
           {items.map(({ to, label, Icon, badge }) => (
-            <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => `flex items-center gap-3 rounded-xl px-3 py-3 font-bold transition ${isActive ? 'bg-tel-soft text-tel' : 'text-ink/60 hover:bg-ink/5 hover:text-ink'}`}>
+            <NavLink key={to} to={to} end={to === '/'} className={({ isActive }) => `flex items-center gap-3 rounded-xl px-3 py-3 font-bold transition ${(isActive || sidebarFrom === to) ?'bg-tel-soft text-tel' : 'text-ink/60 hover:bg-ink/5 hover:text-ink'}`}>
               <Icon size={21} />{label}{!!badge && <span className="ml-auto grid h-6 min-w-6 place-items-center rounded-full bg-tel px-1.5 text-xs text-white">{badge}</span>}
             </NavLink>))}
         </nav>
