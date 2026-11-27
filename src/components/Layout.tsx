@@ -95,6 +95,6 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
 
 export function FloatingPost() {
   const { pathname } = useLocation()
-  if (pathname.startsWith('/new') || pathname.endsWith('/edit')) return null
+if (!['/', '/profile', '/profile/'].includes(pathname)) return null
   return <Link to="/new" className="btn fixed bottom-6 right-6 z-30 !rounded-2xl !px-6 !py-4 text-base shadow-xl"><Plus size={22} />Post barang</Link>
 }
