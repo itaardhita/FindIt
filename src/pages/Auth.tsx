@@ -1,8 +1,9 @@
 import { FormEvent, useState } from 'react'
 import FindItLogo from '../components/FindItLogo'
 import { supabase } from '../lib/supabase'
-
+import { Link } from 'react-router-dom'
 export default function Auth() {
+  
   const [mode, setMode] = useState<'login' | 'register'>('login')
   const [f, setF] = useState({ name: '', email: '', password: '' })
   const [err, setErr] = useState(''); const [busy, setBusy] = useState(false); const [info, setInfo] = useState('')
@@ -35,7 +36,14 @@ export default function Auth() {
           <p className="pb-2 text-sm text-ink/60">{mode === 'login' ? 'Selamat datang kembali di FindIt.' : 'Gabung dan bantu barang pulang ke pemiliknya.'}</p>
           {mode === 'register' && <input className="inp" placeholder="Nama lengkap" required value={f.name} onChange={e => setF({ ...f, name: e.target.value })} />}
           <input className="inp" type="email" placeholder="Email" required value={f.email} onChange={e => setF({ ...f, email: e.target.value })} />
-          <input className="inp" type="password" placeholder="Kata sandi (min. 6 karakter)" minLength={6} required value={f.password} onChange={e => setF({ ...f, password: e.target.value })} />
+          <input className="inp" type="password" placeholder="Kata sandi (min. 6 karakter)" minLength={6} required value={f.password} onChange={e => setF({ ...f, password: e.target.value })} />{mode === 'login' && (
+  <Link
+    to="/lupa-password"
+    className="block text-right text-sm font-bold text-tel hover:underline"
+  >
+    Lupa kata sandi?
+  </Link>
+)}
           {err && <p className="text-sm text-tel" role="alert">{err}</p>}
           {info && <p className="text-sm text-green-600">{info}</p>}
           <button className="btn w-full !py-3" disabled={busy}>{busy ? 'Memproses…' : mode === 'login' ? 'Masuk' : 'Daftar'}</button>
