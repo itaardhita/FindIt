@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
+import { authConfirmUrl, supabase } from '../lib/supabase'
 import photo from './findit-kunci.webp'
 import './AuthLanding.css'
 
@@ -58,15 +58,26 @@ export default function Auth() {
     try {
       const credentials = { email: email.trim(), password }
       const result = register
-        ? await supabase.auth.signUp({ ...credentials, options: { data: { name: name.trim() } } })
+        ? await supabase.auth.signUp({ ...credentials, options: { emailRedirectTo: authConfirmUrl, data: { name: name.trim() } } })
         : await supabase.auth.signInWithPassword(credentials)
       if (result.error) setError(result.error.message)
-      else if (register && !result.data.session) setInfo('Cek email kamu untuk konfirmasi akun, lalu masuk.')
+      else if (register && !result.data.session) setInfo('Cek email kamu untuk konfirmasi akun. Jika tidak ada di Inbox, cek folder Spam.')
     } catch {
       setError('Koneksi terputus. Silakan coba lagi.')
     } finally {
       setBusy(false)
     }
+  }
+
+  async function resend() {
+    if (busy || !email.trim()) return
+    setBusy(true); setError(''); setInfo('')
+    try {
+      const { error } = await supabase.auth.resend({ type: 'signup', email: email.trim(), options: { emailRedirectTo: authConfirmUrl } })
+      if (error) setError(error.message)
+      else setInfo('Permintaan email konfirmasi dikirim. Cek Inbox dan Spam.')
+    } catch { setError('Koneksi terputus. Silakan coba lagi.') }
+    finally { setBusy(false) }
   }
 
   function switchMode() {
@@ -96,6 +107,7 @@ export default function Auth() {
           {!register && <Link to="/lupa-password">Lupa kata sandi?</Link>}
           {error && <p role="alert">{error}</p>}
           {info && <p role="status">{info}</p>}
+          <button type="button" disabled={busy || !email.trim()} onClick={resend}>Kirim ulang email konfirmasi</button>
           <button className="fi-submit" disabled={busy}>{busy ? 'Memproses…' : register ? 'Daftar' : 'Masuk'}</button>
           <button type="button" disabled={busy} onClick={switchMode}>{register ? 'Sudah punya akun? Masuk' : 'Buat akun'}</button>
         </form>
