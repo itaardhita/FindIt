@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 export const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY)
+export const authConfirmUrl = 'https://find-it-bay.vercel.app/auth/confirm'
 export type Profile = { id: string; name: string; avatar_url: string | null }
 export type Post = { id: string; user_id: string; title: string; description: string; category: string; photos: string[]; found_at: string; floor: number; room_id: string; location_note: string | null; status: 'belum_diambil' | 'sudah_diambil'; profiles?: { name: string; avatar_url: string | null } }
 export const CATEGORIES = ['Dompet & Tas', 'Elektronik', 'Aksesoris', 'Dokumen & Kartu', 'Pakaian', 'Alat Tulis', 'Lainnya']
