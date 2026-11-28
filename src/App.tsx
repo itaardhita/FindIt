@@ -14,6 +14,7 @@ import MapPage from './pages/MapPage'
 import History from './pages/History'
 import ProfilePage from './pages/Profile'
 import ForgotPassword from './pages/ForgotPassword'
+import AuthConfirm from './pages/AuthConfirm'
 
 function Shell({ uid }: { uid: string }) {
   const [me, setMe] = useState<Profile | null>(null)
@@ -102,6 +103,7 @@ export default function App() {
     return () => sub.subscription.unsubscribe()
   }, [])
   if (session === undefined) return <div className="grid h-screen place-items-center text-ink/60">Memuat…</div>
+  if (pathname === '/auth/confirm') return <AuthConfirm session={session} />
   if (pathname === '/lupa-password') return <ForgotPassword />
   return session ? <Shell uid={session.user.id} /> : <Auth />
 }
