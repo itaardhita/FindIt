@@ -5,11 +5,11 @@ import { supabase } from '../lib/supabase'
 import photo from './findit-kunci.webp'
 import './AuthLanding.css'
 
-function CampusScene({ animated }: { animated: boolean }) {
+function CampusScene() {
   const panel = useRef<HTMLElement>(null)
   useEffect(() => {
     const element = panel.current
-    if (!element || !animated) return
+    if (!element) return
     const update = () => {
       const progress = Math.min(1, Math.max(0, window.scrollY / 160))
       element.style.setProperty('--lift', String(progress))
@@ -20,13 +20,13 @@ function CampusScene({ animated }: { animated: boolean }) {
       window.removeEventListener('scroll', update)
       element.style.removeProperty('--lift')
     }
-  }, [animated])
+  }, [])
   return <aside ref={panel} className="fi-scene">
     <div className="fi-brand"><svg width="25" height="29" viewBox="0 0 24 28" aria-hidden="true"><path d="M12 26S2 17 2 11a10 10 0 0 1 20 0c0 6-10 15-10 15Z" fill="none" stroke="currentColor" strokeWidth="2.4"/><circle cx="11" cy="10" r="4" fill="none" stroke="currentColor" strokeWidth="2"/><path d="m14 13 4 4" stroke="currentColor" strokeWidth="2"/></svg>Find<span>It</span></div>
     <h1>Temukan kembali<br />yang hilang.</h1>
-    {animated && <p className="fi-intro">Lost &amp; found untuk civitas Telkom University Jakarta. Barang yang ditemukan teman kampus, mungkin sedang kamu cari.</p>}
-    {animated && <p className="fi-credit">Made for students, by students.</p>}
-    {animated && <div className="fi-art" aria-hidden="true">
+    <p className="fi-intro">Lost &amp; found untuk civitas Telkom University Jakarta. Barang yang ditemukan teman kampus, mungkin sedang kamu cari.</p>
+    <p className="fi-credit">Made for students, by students.</p>
+    <div className="fi-art" aria-hidden="true">
       <div className="fi-point">
         <svg viewBox="0 0 48 58">
           <path d="M24 55C20 48 3 32 3 23a21 21 0 1 1 42 0c0 9-17 25-21 32Z" fill="#d31336" stroke="#fff9f1" strokeWidth="3" />
@@ -35,7 +35,7 @@ function CampusScene({ animated }: { animated: boolean }) {
         <span>R. Kuliah 201</span>
       </div>
       <img className="fi-photo" src={photo} alt="" />
-    </div>}
+    </div>
   </aside>
 }
 
@@ -78,9 +78,9 @@ export default function Auth() {
     window.scrollTo(0, 0)
   }
 
-  return <main className={register ? 'fi-auth' : 'fi-auth fi-login'}>
+  return <main className="fi-auth fi-login">
     <div className="fi-shell">
-      <CampusScene animated={!register} />
+      <CampusScene />
       <section className="fi-panel">
         <form className="fi-form" onSubmit={submit}>
           <h2>{register ? 'Buat akun' : 'Masuk'}</h2>
